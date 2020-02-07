@@ -19,6 +19,7 @@ export interface CurrentUser {
 
 export interface UserModelState {
   currentUser?: CurrentUser;
+  
 }
 
 export interface UserModelType {
@@ -39,6 +40,7 @@ const UserModel: UserModelType = {
 
   state: {
     currentUser: {},
+    
   },
 
   effects: {

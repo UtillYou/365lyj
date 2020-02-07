@@ -3,24 +3,24 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { fakeRegister } from '@/services/user';
 
-export interface StateType {
+export interface RegisterStateType {
   status?: 'ok' | 'error';
   currentAuthority?: 'user' | 'guest' | 'admin';
 }
 
 export type Effect = (
   action: AnyAction,
-  effects: EffectsCommandMap & { select: <T>(func: (state: StateType) => T) => T },
+  effects: EffectsCommandMap & { select: <T>(func: (state: RegisterStateType) => T) => T },
 ) => void;
 
 export interface ModelType {
   namespace: string;
-  state: StateType;
+  state: RegisterStateType;
   effects: {
     submit: Effect;
   };
   reducers: {
-    registerHandle: Reducer<StateType>;
+    registerHandle: Reducer<RegisterStateType>;
   };
 }
 

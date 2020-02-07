@@ -5,6 +5,7 @@ import { GlobalModelState } from './global';
 import { DefaultSettings as SettingModelState } from '../../config/defaultSettings';
 import { UserModelState } from './user';
 import { StateType } from './login';
+import { RegisterStateType } from './register';
 
 export { GlobalModelState, SettingModelState, UserModelState };
 
@@ -17,6 +18,7 @@ export interface Loading {
     setting?: boolean;
     user?: boolean;
     login?: boolean;
+    
   };
 }
 
@@ -26,6 +28,7 @@ export interface ConnectState {
   settings: SettingModelState;
   user: UserModelState;
   login: StateType;
+  register:RegisterStateType;
 }
 
 export interface Route extends MenuDataItem {

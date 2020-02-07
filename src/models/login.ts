@@ -4,13 +4,14 @@ import { stringify } from 'querystring';
 import { router } from 'umi';
 
 import { fakeAccountLogin, getFakeCaptcha } from '@/services/user';
-import { setAuthority } from '@/utils/authority';
+import { setAuthority,getToken,setToken } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
   type?: string;
   currentAuthority?: 'user' | 'guest' | 'admin';
+  token?:string;
 }
 
 export interface LoginModelType {
@@ -31,6 +32,7 @@ const Model: LoginModelType = {
 
   state: {
     status: undefined,
+    token: getToken(),
   },
 
   effects: {
@@ -42,6 +44,7 @@ const Model: LoginModelType = {
       });
       // Login successfully
       if (response.status === 'ok') {
+        
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params as { redirect: string };
@@ -81,11 +84,13 @@ const Model: LoginModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
+      setToken(payload.token);
       setAuthority(payload.currentAuthority);
       return {
         ...state,
         status: payload.status,
         type: payload.type,
+        token:payload.token,
       };
     },
   },

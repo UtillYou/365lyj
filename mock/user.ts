@@ -83,6 +83,7 @@ export default {
       res.send({
         status: 'ok',
         type,
+        token:'123456789',
         currentAuthority: 'admin',
       });
       return;
@@ -91,6 +92,7 @@ export default {
       res.send({
         status: 'ok',
         type,
+        token:'123456789',
         currentAuthority: 'user',
       });
       return;

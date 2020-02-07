@@ -6,7 +6,7 @@ import { FormComponentProps } from 'antd/es/form';
 import Link from 'umi/link';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { StateType } from '../../../models/register';
+import { RegisterStateType } from '../../../models/register';
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -28,7 +28,7 @@ const passwordProgressMap: {
 };
 interface RegisterProps extends FormComponentProps {
   dispatch: Dispatch<any>;
-  userAndRegister: StateType;
+  userAndRegister: RegisterStateType;
   submitting: boolean;
 }
 interface RegisterState {
@@ -366,7 +366,7 @@ export default connect(
     userAndRegister,
     loading,
   }: {
-    userAndRegister: StateType;
+    userAndRegister: RegisterStateType;
     loading: {
       effects: {
         [key: string]: boolean;
