@@ -3,7 +3,7 @@ import { Effect } from 'dva';
 import { stringify } from 'querystring';
 import { router } from 'umi';
 
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/user';
+import {  getCaptcha } from '@/services/user';
 import { setAuthority,getToken,setToken } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
@@ -12,13 +12,13 @@ export interface StateType {
   type?: string;
   currentAuthority?: 'user' | 'guest' | 'admin';
   token?:string;
+  userName?:string;
 }
 
 export interface LoginModelType {
   namespace: string;
   state: StateType;
   effects: {
-    login: Effect;
     getCaptcha: Effect;
     logout: Effect;
   };
@@ -33,43 +33,24 @@ const Model: LoginModelType = {
   state: {
     status: undefined,
     token: getToken(),
+    userName:undefined,
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+    *getCaptcha({ payload }, { call }) {
+      yield call(getCaptcha, payload);
+    },
+
+    *logout(_, { put }) {
+      const { redirect } = getPageQuery();
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: {
+          status: undefined,
+          token: undefined,
+          userName:undefined,
+        },
       });
-      // Login successfully
-      if (response.status === 'ok') {
-        
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        let { redirect } = params as { redirect: string };
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
-            }
-          } else {
-            window.location.href = '/';
-            return;
-          }
-        }
-        router.replace(redirect || '/');
-      }
-    },
-
-    *getCaptcha({ payload }, { call }) {
-      yield call(getFakeCaptcha, payload);
-    },
-
-    logout() {
-      const { redirect } = getPageQuery();
       // Note: There may be security issues, please note
       if (window.location.pathname !== '/user/login' && !redirect) {
         router.replace({
@@ -91,6 +72,7 @@ const Model: LoginModelType = {
         status: payload.status,
         type: payload.type,
         token:payload.token,
+        userName:payload.userName,
       };
     },
   },

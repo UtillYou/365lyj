@@ -1,16 +1,15 @@
 interface UserRegisterParams {
-    mail: string;
+    code: string;
     password: string;
-    confirm: string;
-    mobile: string;
-    captcha: string;
-    prefix: string;
+    username: string;
+    phone: string;
   }
 
 
   interface LoginParamsType {
-    userName: string;
-    password: string;
-    mobile: string;
-    captcha: string;
+    username?: string;
+    password?: string;
+    phone?: string;
+    code?: string;
+    type:string;
   }

@@ -31,10 +31,17 @@ export function setAuthority(authority: string | string[]): void {
   reloadAuthorized();
 }
 
+
+let innerToken:string;
+
 export function setToken(token: string): void {
+  innerToken = token;
   sessionStorage.setItem('token', token);
 }
 
 export function getToken(): (string | undefined) {
+  if (innerToken) {
+    return innerToken;
+  }
   return sessionStorage.getItem('token') || undefined;
 }

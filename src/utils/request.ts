@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import { getToken } from './authority';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -51,6 +52,32 @@ const errorHandler = (error: { response: Response }): Response => {
 const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+  prefix:'http://29qu096001.zicp.vip',
+  
+});
+
+export const post = (url:string,data?:any):Promise<any>=>request(url,{
+    data,
+    method:'POST',
+    headers:{
+      Authorization:`Bearer ${getToken()}`
+    }
+  });
+
+export const postUnsafe = (url:string,data?:any):Promise<any>=>request(url,{
+  data,
+  method:'POST'
+});
+
+export const get = (url:string,data?:any):Promise<any>=>request(url,{
+  data,
+  headers:{
+    Authorization:`Bearer ${getToken()}`
+  }
+});
+
+export const getUnsafe = (url:string,data?:any):Promise<any>=>request(url,{
+  data,
 });
 
 export default request;

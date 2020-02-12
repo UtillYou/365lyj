@@ -1,16 +1,16 @@
-import { Alert } from 'antd';
+import { Alert,message } from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 import React, { Component } from 'react';
-
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { Dispatch, AnyAction } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
-import { Link } from 'umi';
+import { Link,router } from 'umi';
 import { connect } from 'dva';
 import { StateType } from '@/models/login';
 import LoginComponents from './components/Login';
 import styles from './style.less';
 import { ConnectState } from '@/models/connect';
+import {accountLogin } from '@/services/user';
+import { getPageQuery } from '@/utils/utils';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
 
@@ -21,7 +21,7 @@ interface LoginProps {
 }
 interface LoginState {
   type: string;
-  autoLogin: boolean;
+  submitting:boolean;
 }
 
 class Login extends Component<LoginProps, LoginState> {
@@ -29,26 +29,60 @@ class Login extends Component<LoginProps, LoginState> {
 
   state: LoginState = {
     type: 'account',
-    autoLogin: true,
+    submitting: false,
   };
 
-  changeAutoLogin = (e: CheckboxChangeEvent) => {
-    this.setState({
-      autoLogin: e.target.checked,
-    });
-  };
 
-  handleSubmit = (err: unknown, values: LoginParamsType) => {
+  handleSubmit = async (err: unknown, values: any) => {
     const { type } = this.state;
+    const { dispatch } = this.props;
     if (!err) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'login/login',
-        payload: {
-          ...values,
-          type,
-        },
+      this.setState({
+        submitting:true
       });
+      const payload:LoginParamsType = {
+        code:values.captcha,
+        username:values.userName,
+        password:values.password,
+        phone:values.mobile,
+        type
+      };
+      const response = await accountLogin(payload);
+      this.setState({
+        submitting:false
+      });
+      if (response) {
+        if (response.status === 200 ) {
+          message.success(formatMessage({ id: 'user-login.result.success'}));
+          
+          dispatch({
+            type: 'login/changeLoginStatus',
+            payload: {
+              status: 200,
+              token: response.data.accessToken,
+              userName:values.userName,
+            },
+          });
+          const urlParams = new URL(window.location.href);
+          const params = getPageQuery();
+          let { redirect } = params as { redirect: string };
+          if (redirect) {
+            const redirectUrlParams = new URL(redirect);
+            if (redirectUrlParams.origin === urlParams.origin) {
+              redirect = redirect.substr(urlParams.origin.length);
+              if (redirect.match(/^\/.*#/)) {
+                redirect = redirect.substr(redirect.indexOf('#') + 1);
+              }
+            } else {
+              window.location.href = '/';
+              return;
+            }
+          }
+          router.replace(redirect || '/');
+        }else{
+          message.error(response.msg);
+        }
+      }
     }
   };
 
@@ -64,7 +98,7 @@ class Login extends Component<LoginProps, LoginState> {
       this.loginForm.validateFields(
         ['mobile'],
         {},
-        async (err: unknown, values: LoginParamsType) => {
+        async (err: unknown, values: any) => {
           if (err) {
             reject(err);
           } else {
@@ -88,9 +122,9 @@ class Login extends Component<LoginProps, LoginState> {
   );
 
   render() {
-    const { userLogin = {}, submitting } = this.props;
+    const { userLogin = {}, } = this.props;
     const { status, type: loginType } = userLogin;
-    const { type} = this.state;
+    const { type,submitting} = this.state;
     return (
       <div className={styles.main}>
         <LoginComponents
@@ -188,7 +222,6 @@ class Login extends Component<LoginProps, LoginState> {
   }
 }
 
-export default connect(({ login, loading }: ConnectState) => ({
+export default connect(({ login }: ConnectState) => ({
   userLogin: login,
-  submitting: loading.effects['login/login'],
 }))(Login);

@@ -1,11 +1,12 @@
 import { AnyAction, Reducer } from 'redux';
 
 import { EffectsCommandMap } from 'dva';
-import { fakeRegister } from '@/services/user';
+import { register,getCaptcha } from '@/services/user';
 
 export interface RegisterStateType {
-  status?: 'ok' | 'error';
+  status?: number;
   currentAuthority?: 'user' | 'guest' | 'admin';
+  msg?:string;
 }
 
 export type Effect = (
@@ -18,6 +19,7 @@ export interface ModelType {
   state: RegisterStateType;
   effects: {
     submit: Effect;
+    captcha:Effect;
   };
   reducers: {
     registerHandle: Reducer<RegisterStateType>;
@@ -33,11 +35,16 @@ const Model: ModelType = {
 
   effects: {
     *submit({ payload }, { call, put }) {
-      const response = yield call(fakeRegister, payload);
+      const response = yield call(register, payload);
+      
       yield put({
         type: 'registerHandle',
         payload: response,
       });
+    },
+    *captcha({ payload }, { call }) {
+       yield call(getCaptcha, payload.mobile);
+
     },
   },
 
@@ -46,6 +53,7 @@ const Model: ModelType = {
       return {
         ...state,
         status: payload.status,
+        msg:payload.msg,
       };
     },
   },

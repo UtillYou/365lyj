@@ -85,7 +85,7 @@ export default {
           component: './user/login',
         },
         {
-          name: '注册结果页',
+          name: 'register.result',
           icon: 'smile',
           path: '/user/register-result',
           component: './user/registerResult',

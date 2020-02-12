@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
 
+const commonSuccessResult = {
+  "status": 200,
+  "msg": "成功",
+  "data": "SUCCESS"
+};
+
 function getFakeCaptcha(req: Request, res: Response) {
-  return res.json('captcha-xxx');
+  return res.json(commonSuccessResult);
 }
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 export default {
@@ -143,6 +149,6 @@ export default {
     });
   },
 
-  'GET  /api/login/captcha': getFakeCaptcha,
+  'POST  /api/messages/code': getFakeCaptcha,
 
 };
