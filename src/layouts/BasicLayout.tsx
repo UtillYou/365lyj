@@ -14,7 +14,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'umi';
 import { Dispatch } from 'redux';
 import { connect } from 'dva';
-import { Icon, Result, Button } from 'antd';
+import { Result, Button } from 'antd';
 import { formatMessage } from 'umi-plugin-react/locale';
 
 import Authorized from '@/utils/Authorized';
@@ -22,6 +22,7 @@ import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectState } from '@/models/connect';
 import { isAntDesignPro, getAuthorityFromRouter } from '@/utils/utils';
 import logo from '../assets/logo.svg';
+import { getMenus } from '@/utils/authority';
 
 const noMatch = (
   <Result
@@ -55,14 +56,22 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
 /**
  * use Authorized check all menu item
  */
-const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
-  menuList.map(item => {
-    const localItem = {
-      ...item,
-      children: item.children ? menuDataRender(item.children) : [],
-    };
-    return Authorized.check(item.authority, localItem, null) as MenuDataItem;
+const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>{
+  const menus:Array<string> = (getMenus() as string).split(',');
+  console.log(menus,menuList)
+  if(!menus){
+    return [];
+  }
+  const filtered =   menuList.filter(item=>menus.findIndex(x=>`/${x}` === item.key)>-1);
+  console.log(filtered)
+  return filtered.map(item => {
+      const localItem = {
+        ...item,
+        children: item.children ? menuDataRender(item.children) : [],
+      };
+      return Authorized.check(item.authority, localItem, null) as MenuDataItem;
   });
+};
 
 const defaultFooterDom = (
   <DefaultFooter

@@ -2,7 +2,7 @@ import request, { get } from '@/utils/request';
 
 
 export async function accountLogin(params: LoginParamsType) {
-  return request('/api/auth/token', {
+  return request('/api/auth/login', {
     method: 'POST',
     data: params,
   });

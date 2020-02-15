@@ -4,7 +4,7 @@ import { stringify } from 'querystring';
 import { router } from 'umi';
 
 import {  getCaptcha } from '@/services/user';
-import { setAuthority,getToken,setToken } from '@/utils/authority';
+import { setAuthority,getToken,setToken, setMenus } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
 export interface StateType {
@@ -13,6 +13,7 @@ export interface StateType {
   currentAuthority?: 'user' | 'guest' | 'admin';
   token?:string;
   userName?:string;
+  menus?:any;
 }
 
 export interface LoginModelType {
@@ -34,6 +35,7 @@ const Model: LoginModelType = {
     status: undefined,
     token: getToken(),
     userName:undefined,
+    menus:undefined,
   },
 
   effects: {
@@ -49,6 +51,7 @@ const Model: LoginModelType = {
           status: undefined,
           token: undefined,
           userName:undefined,
+          menus:undefined,
         },
       });
       // Note: There may be security issues, please note
@@ -66,13 +69,15 @@ const Model: LoginModelType = {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setToken(payload.token);
-      setAuthority(payload.currentAuthority);
+      setAuthority('admin');
+      setMenus(payload.menus);
       return {
         ...state,
         status: payload.status,
         type: payload.type,
         token:payload.token,
         userName:payload.userName,
+        menus:payload.menus,
       };
     },
   },

@@ -54,13 +54,14 @@ class Login extends Component<LoginProps, LoginState> {
       if (response) {
         if (response.status === 200 ) {
           message.success(formatMessage({ id: 'user-login.result.success'}));
-          
+          const menusStr = response.data.menus.map(x=>x.menuName).join(',');
           dispatch({
             type: 'login/changeLoginStatus',
             payload: {
               status: 200,
               token: response.data.accessToken,
               userName:values.userName,
+              menus:menusStr
             },
           });
           const urlParams = new URL(window.location.href);
