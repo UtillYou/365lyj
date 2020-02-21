@@ -100,13 +100,14 @@ export default {
     },
     {
       path: '/',
-      component: '../layouts/SecurityLayout',
+      component: '../layouts/BasicLayout',
+      Routes: ['src/pages/Authorized'],
       routes: [
-        {
-          path: '/',
-          component: '../layouts/BasicLayout',
-          authority: ['admin', 'user'],
-          routes: [
+        // {
+          // path: '/',
+          // component: '../layouts/BasicLayout',
+          // authority: ['admin', 'user'],
+          // routes: [
             {
               path: '/',
               redirect: '/welcome',
@@ -119,20 +120,27 @@ export default {
               authority: ['admin'],
             },
             {
-              path: '/admin',
-              name: 'admin',
-              icon: 'crown',
-              component: './Admin',
-              authority: ['admin'],
+              path: '/sys_setting',
+              name: 'sys_setting',
+              icon: 'setting',
+              routes:[
+                {
+                  path:'/sys_setting/user_management',
+                  name:'user_management',
+                  icon:'user',
+                  component: './SysSetting/UserManagement',
+                  authority: ['admin'],
+                }
+              ]
             },
             {
               component: './404',
             },
-          ],
-        },
-        {
-          component: './404',
-        },
+          // ],
+        // },
+        // {
+        //   component: './404',
+        // },
       ],
     },
     {

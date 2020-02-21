@@ -57,13 +57,14 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
  * use Authorized check all menu item
  */
 const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>{
-  const menus:Array<string> = (getMenus() as string).split(',');
-  console.log(menus,menuList)
-  if(!menus){
+  // return menuList;
+  const rawMenus = getMenus();
+  if(!rawMenus){
     return [];
   }
+  const menus:Array<string> = (getMenus() as string).split(',');
+  
   const filtered =   menuList.filter(item=>menus.findIndex(x=>`/${x}` === item.key)>-1);
-  console.log(filtered)
   return filtered.map(item => {
       const localItem = {
         ...item,
@@ -129,11 +130,19 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       });
     }
   };
+  console.log(props.route.routes, location.pathname);
+  
   // get children authority
   const authorized = getAuthorityFromRouter(props.route.routes, location.pathname || '/') || {
     authority: undefined,
   };
+  const rawMenus = getMenus();
+  const menus = rawMenus?rawMenus.split(','):undefined;
 
+  const hasKey = menus && menus.indexOf(authorized.name ? authorized.name : '') > -1;
+  const authority = hasKey || location.pathname === '/' ? authorized!.authority : 'NO_ACCESS';
+
+console.log(authorized,hasKey,menus)
   return (
     <ProLayout
       logo={logo}
@@ -175,7 +184,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       {...props}
       {...settings}
     >
-      <Authorized authority={authorized!.authority} noMatch={noMatch}>
+      <Authorized authority={authority} noMatch={noMatch}>
         {children}
       </Authorized>
     </ProLayout>

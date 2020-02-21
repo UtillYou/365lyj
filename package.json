@@ -47,7 +47,9 @@
     "not ie <= 10"
   ],
   "dependencies": {
+    "@ant-design/compatible": "0.0.1-rc.1",
     "@ant-design/pro-layout": "^4.10.0",
+    "@ant-design/pro-table": "^1.0.35",
     "@antv/data-set": "^0.10.2",
     "@types/react-router": "^5.1.4",
     "antd": "^3.23.6",

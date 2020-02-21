@@ -30,14 +30,31 @@ export const getPageQuery = () => parse(window.location.href.split('?')[1]);
  * @param router [{}]
  * @param pathname string
  */
-export const getAuthorityFromRouter = <T extends { path?: string }>(
+export const getAuthorityFromRouter = <T extends { path?: string,children?:Array<T> }>(
   router: T[] = [],
   pathname: string,
 ): T | undefined => {
-  const authority = router.find(({ path }) => path && pathRegexp(path).exec(pathname));
-  if (authority) return authority;
+  // const authority = router.find(({ path }) => path && pathRegexp(path).exec(pathname));
+  // if (authority) return authority;
+
+  let i = 0;
+  while(i<router.length){
+    const item = router[i];
+    const {path} = item;
+    if (path && pathRegexp(path).exec(pathname)) {
+      return item;
+    }
+    const childItem = getAuthorityFromRouter(item.children,pathname);
+    if (childItem) {
+      return childItem
+    }
+    i+=1;
+  }
+
   return undefined;
 };
+
+
 
 export const getRouteAuthority = (path: string, routeData: Route[]) => {
   let authorities: string[] | string | undefined;
